@@ -1,12 +1,24 @@
-//--Kinect sectup
 import org.openkinect.*;
 import org.openkinect.processing.*;
+import ddf.minim.*;
+
+String fileType = "tga";
+String audioFileType = "wav";
+String fileName = "shot";
+String filePath = "render";
+
+//sound
+Minim minim;
+AudioInput in;
+AudioRecorder fout;
+
+//--Kinect sectup
 Kinect kinect;
 boolean depth = true;
 boolean rgb = false;
 boolean ir = false;
 boolean process = false;
-float deg = 0;  // orig 15
+float deg = 15;  // orig 15
 int[] depthArray;
 int pixelCounter = 1;
 //--
@@ -21,7 +33,6 @@ boolean record = false;
 PImage displayImg;
 PFont font;
 String sayText;
-String fileType = "tga";
 int counter = 1; 
 int shot = 1;
 
@@ -30,11 +41,14 @@ int shot = 1;
 void setup() {
   size(w,h);
   frameRate = fps;
+  minim = new Minim(this);
+  in = minim.getLineIn(Minim.STEREO, 512);
+  initAudioFout();
   font = createFont("Arial",fontSize);
   textFont(font,fontSize);
   initKinect();
   displayImg = createImage(w,h,RGB);
-  sayText="READY  " + "shot" + shot;
+  sayText="READY  " + fileName + shot;
   println(sayText);
 }
 
@@ -46,10 +60,20 @@ void draw() {
   imageProcess();
   image(displayImg,4,0);
   if(record) {
-    saveFrame("render/shot" + shot + "_" + counter + "." +fileType);
+    if(!fout.isRecording()){
+    fout.beginRecord();
+    }
+    saveFrame(filePath + "/" + fileName + shot + "/" + fileName + shot + "_" + counter + "." + fileType);
     sayText="REC  shot" + shot + "_" + counter + "." + fileType;
     println(sayText);
     counter++;
+  }else{
+  if(fout.isRecording()){
+  fout.endRecord();
+  fout.save();
+  println("saved " + fileName+shot+"."+audioFileType);
+  initAudioFout();
+  }
   }
   recDot();
 }
@@ -121,7 +145,15 @@ void initKinect() {
 
 //---
 
+void initAudioFout(){
+  fout = minim.createRecorder(in,filePath + "/" + fileName + shot + "/" + fileName + shot + "." + audioFileType,true);
+}
+
+//---
+
 void stop() {
+  in.close();
+  minim.stop();
   kinect.quit();
   super.stop();
 }
