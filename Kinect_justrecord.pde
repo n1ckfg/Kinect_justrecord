@@ -1,6 +1,7 @@
 import org.openkinect.*;
 import org.openkinect.processing.*;
 import ddf.minim.*;
+import processing.opengl.*;
 
 String fileType = "tga";
 String audioFileType = "wav";
@@ -23,8 +24,8 @@ int[] depthArray;
 int pixelCounter = 1;
 //--
 
-int maxDepthValue = 1040 ;  // full range 0-2047, rec'd 530-1040
-int minDepthValue = 530 ;  
+int maxDepthValue = 1040;  // full range 0-2047, rec'd 530-1040
+int minDepthValue = 530;  
 int w = 640;
 int h = 480;
 int fps = 24;
