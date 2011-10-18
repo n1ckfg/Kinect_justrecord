@@ -40,7 +40,7 @@ int shot = 1;
 //-----------------------------------------
 
 void setup() {
-  size(w,h);
+  size(w,h,P2D);
   frameRate(fps);
   minim = new Minim(this);
   in = minim.getLineIn(Minim.STEREO, 512);
