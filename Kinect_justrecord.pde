@@ -2,11 +2,13 @@ import org.openkinect.*;
 import org.openkinect.processing.*;
 import ddf.minim.*;
 import processing.opengl.*;
+import proxml.*;
 
-String fileType = "tga";
+String fileType = "tga";  //either "tif", "tga", "jpg", "png"
 String audioFileType = "wav";
 String fileName = "shot";
-String filePath = "render";
+String filePath = "data";
+String sayText;
 
 //sound
 Minim minim;
@@ -33,9 +35,15 @@ int fontSize = 12;
 boolean record = false;
 PImage displayImg;
 PFont font;
-String sayText;
 int counter = 1; 
 int shot = 1;
+int timestamp;
+int timestampInterval = 1000;
+
+XMLInOut xmlIO;
+proxml.XMLElement xmlFile;
+String xmlFileName;
+boolean loaded = false;
 
 //-----------------------------------------
 
@@ -62,21 +70,31 @@ void draw() {
   image(displayImg,4,0);
   if(record) {
     if(!fout.isRecording()){
+    xmlInit();
     fout.beginRecord();
     }
-    saveFrame(filePath + "/" + fileName + shot + "/" + fileName + shot + "_" + counter + "." + fileType);
-    sayText="REC  shot" + shot + "_" + counter + "." + fileType;
+    timestamp=millis();
+    sayText = fileName + shot + "_frame" + counter + "." + fileType;
+    saveFrame(filePath + "/" + fileName + shot + "/" + sayText);
+    xmlAdd();
+    sayText="REC " + sayText;
     println(sayText);
     counter++;
   }else{
   if(fout.isRecording()){
   fout.endRecord();
   fout.save();
-  println("saved " + fileName+shot+"."+audioFileType);
   initAudioFout();
   }
   }
   recDot();
+}
+
+void xmlEvent(proxml.XMLElement element) {
+  //this function is ccalled by default when an XML object is loaded
+  xmlFile = element;
+  //parseXML(); //appelle la fonction qui analyse le fichier XML
+  loaded = true;
 }
 
 //-----------------------------------------
@@ -108,6 +126,9 @@ void keyPressed() {
   if(key==' ') {
     if (record) {
       record=false;
+      println("saved " + fileName+shot+"."+audioFileType);
+      xmlSaveToDisk();
+      println("saved " + "timestamps_" + fileName + shot + ".xml");
       shot++;
       sayText="READY  shot" + shot;
       println(sayText);
@@ -147,7 +168,7 @@ void initKinect() {
 //---
 
 void initAudioFout(){
-  fout = minim.createRecorder(in,filePath + "/" + fileName + shot + "/" + fileName + shot + "." + audioFileType,true);
+  fout = minim.createRecorder(in,filePath + "/" + fileName + shot + "." + audioFileType,true);
 }
 
 //---
@@ -157,6 +178,26 @@ void stop() {
   minim.stop();
   kinect.quit();
   super.stop();
+  exit();
+}
+
+/* saves the XML list to disk */
+void xmlSaveToDisk() {
+  xmlIO.saveElement(xmlFile, xmlFileName);
+}  
+
+void xmlAdd() {
+  proxml.XMLElement frame = new proxml.XMLElement("frame");
+  xmlFile.addChild(frame);
+  frame.addAttribute("index",counter);
+  frame.addAttribute("timestamp",timestamp);
+}
+
+void xmlInit() {
+  xmlIO = new XMLInOut(this);
+  xmlFileName = fileName + shot + ".xml";
+  xmlFile = new proxml.XMLElement("timestamps");
+  xmlFile.addAttribute("shot",shot);
 }
 
 //---   END   ---
