@@ -28,7 +28,7 @@ int maxDepthValue = 1040;  // full range 0-2047, rec'd 530-1040
 int minDepthValue = 530;  
 int w = 640;
 int h = 480;
-int fps = 24;
+int fps = 30;
 int fontSize = 12;
 boolean record = false;
 PImage displayImg;
