@@ -4,11 +4,18 @@ import ddf.minim.*;
 import processing.opengl.*;
 import proxml.*;
 
+//**************************************
+int maxDepthValue = 1040;  // full range 0-2047, rec'd 530-1040
+int minDepthValue = 530;  
+int w = 640;
+int h = 480;
+int fps = 30;
+
 String fileType = "tga";  //tif, tga, jpg, png; use tga for best speed
 String audioFileType = "wav";
 String fileName = "shot";
 String filePath = "data";
-String sayText;
+//**************************************
 
 //sound
 Minim minim;
@@ -26,11 +33,6 @@ int[] depthArray;
 int pixelCounter = 1;
 //--
 
-int maxDepthValue = 1040;  // full range 0-2047, rec'd 530-1040
-int minDepthValue = 530;  
-int w = 640;
-int h = 480;
-int fps = 30;
 int fontSize = 12;
 boolean record = false;
 PImage displayImg;
@@ -39,6 +41,8 @@ int counter = 1;
 int shot = 1;
 int timestamp;
 int timestampInterval = 1000;
+String sayText;
+
 
 XMLInOut xmlIO;
 proxml.XMLElement xmlFile;
