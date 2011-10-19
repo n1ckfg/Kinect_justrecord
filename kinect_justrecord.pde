@@ -4,7 +4,7 @@ import ddf.minim.*;
 import processing.opengl.*;
 import proxml.*;
 
-String fileType = "tga";  //either "tif", "tga", "jpg", "png"
+String fileType = "tga";  //tif, tga, jpg, png; use tga for best speed
 String audioFileType = "wav";
 String fileName = "shot";
 String filePath = "data";
