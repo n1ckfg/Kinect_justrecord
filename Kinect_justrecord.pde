@@ -6,9 +6,11 @@ import proxml.*;
 //**************************************
 //int maxDepthValue = 1040;  // full range 0-2047, rec'd 530-1040
 //int minDepthValue = 530;  
-int w = 640;
-int h = 480;
+int sW = 640;
+int sH = 480;
 int fps = 30;
+
+color bgColor = color(0);
 
 String fileType = "tga";  //tif, tga, jpg, png; use tga for best speed
 String audioFileType = "wav";
@@ -49,17 +51,19 @@ boolean loaded = false;
 //-----------------------------------------
 
 void setup() {
-  size(w, h, P2D);
+  size(sW, sH, P2D);
   frameRate(fps);
   setupRecord();
+  setupGrid();
+  setupSound("sounds");
 }
 
 //---
 
 void draw() {
-  background(0);
+  background(bgColor);
   context.update();
-  image(context.depthImage(), -4, 0);
+  drawGrid(context.depthImage());
   if (modeRec) {
     drawRecord();
   }
@@ -113,7 +117,7 @@ void drawRecord() {
 void recDot() {
   fill(200);
   text(sayText, 40, 35);
-  text(int(frameRate) + " fps", w-60, 35);
+  text(int(frameRate) + " fps", sW-60, 35);
   noFill();
   if (modeRec&&(counter%2!=0)) {
     stroke(255, 0, 0);
@@ -127,22 +131,10 @@ void recDot() {
   strokeWeight(1);
   rectMode(CORNER);
   rect(3, 59, 633, 360);
-  line((w/2)-10, (h/2), (w/2)+10, (h/2));
-  line((w/2), (h/2)-10, (w/2), (h/2)+10);
+  line((sW/2)-10, (sH/2), (sW/2)+10, (sH/2));
+  line((sW/2), (sH/2)-10, (sW/2), (sH/2)+10);
 }
 
-//---
-
-void keyPressed() {
-  if (key==' ') {
-    if (modeRec) {
-      modeRec=false;
-      doSaveWrapup();
-    } else {
-      modeRec=true;
-    }
-  }
-}
 //---
 void doSaveWrapup() {
   if (fout.isRecording()) {
@@ -162,7 +154,7 @@ void doSaveWrapup() {
 //---
 
 void initKinect() {
-  context = new SimpleOpenNI(this);
+  context = new SimpleOpenNI(this,SimpleOpenNI.RUN_MODE_MULTI_THREADED);
   context.setMirror(mirror);
   if (depthSwitch) {
     context.enableDepth();
