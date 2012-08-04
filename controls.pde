@@ -1,5 +1,5 @@
 void keyPressed() {
-  if (key==' ') {
+  if (key==' '||keyCode==33||keyCode==34) {
     if (modeRec) {
       modeRec=false;
       doSaveWrapup();

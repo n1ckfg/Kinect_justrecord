@@ -8,7 +8,7 @@ import proxml.*;
 //int minDepthValue = 530;  
 int sW = 640;
 int sH = 480;
-int fps = 30;
+int fps = 24;
 
 color bgColor = color(0);
 
