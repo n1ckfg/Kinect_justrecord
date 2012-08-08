@@ -1,12 +1,9 @@
 void keyPressed() {
   if (key==' '||keyCode==33||keyCode==34) {
     if (modeRec) {
-      modeRec=false;
-      doSaveWrapup();
-      stopRecSound.play(0);
+      stopAll();
     } else {
-      modeRec=true;
-      startRecSound.play(0);
+      startAll();
     }
   }
    if (key=='s'||key=='S') {
@@ -21,3 +18,16 @@ void keyPressed() {
     pKeySound.play(0);
   }
 }
+
+void stopAll(){
+      modeRec=false;
+      doSaveWrapup();
+      stopRecSound.play(0);
+}
+
+void startAll(){
+      modeRec=true;
+      startRecSound.play(0);
+   }
+
+

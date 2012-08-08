@@ -25,7 +25,6 @@ void drawGrid(PImage _img) {
     mapImg = _img;
 
     mainRender();
-
 }
 
 void mainRender() {

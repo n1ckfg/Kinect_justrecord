@@ -42,6 +42,15 @@ int timestamp;
 int timestampInterval = 1000;
 String sayText;
 
+// Using a RAM buffer will increase your speed on slower machines, but depends on available RAM.
+// Disk recording on a C2D or better will be fine (especially with an SSD),
+// but low-powered machines like netbooks will probably need to use the buffer.
+boolean recordToBuffer = false;
+ArrayList frameBuffer;
+int bufferCounterMin = counter;
+int bufferCounter = bufferCounterMin;
+int bufferCounterMax = 60 * fps; //set this according to RAM size.
+//--
 
 XMLInOut xmlIO;
 proxml.XMLElement xmlFile;
@@ -56,6 +65,9 @@ void setup() {
   setupRecord();
   setupGrid();
   setupSound("sounds");
+  if(recordToBuffer){
+    frameBuffer = new ArrayList();
+  }
 }
 
 //---
@@ -105,13 +117,38 @@ void drawRecord() {
       fout.beginRecord();
     }
     timestamp=millis();
-    sayText = fileName + shot + "_frame" + counter + "." + fileType;
-    saveFrame(filePath + "/" + fileName + shot + folderIndicator + "/" + sayText);
+    actuallyRecord();
     xmlAdd();
-    sayText="REC " + sayText;
-    println(sayText);
     counter++;
   }
+}
+
+void actuallyRecord(){
+if(recordToBuffer){
+  if(bufferCounter<bufferCounterMax){
+    PImage temp = get();
+    frameBuffer.add(temp);
+    bufferCounter++;
+    println("buffering: " + bufferCounter);
+  }else{
+    stopAll();
+  }
+}else{
+  saveFrameHandler(counter);
+}
+}
+
+void saveFrameHandler(int _c){
+    if(recordToBuffer){
+      sayText = fileName + shot + "_frame" + (_c + 1) + "." + fileType;
+      PImage tempImg = (PImage) frameBuffer.get(_c);
+      image(tempImg,0,0);
+    } else {
+      sayText = fileName + shot + "_frame" + _c + "." + fileType;
+    }
+    saveFrame(filePath + "/" + fileName + shot + folderIndicator + "/" + sayText);
+    sayText = "REC " + sayText;
+    println(sayText);
 }
 
 void recDot() {
@@ -133,10 +170,24 @@ void recDot() {
   rect(3, 59, 633, 360);
   line((sW/2)-10, (sH/2), (sW/2)+10, (sH/2));
   line((sW/2), (sH/2)-10, (sW/2), (sH/2)+10);
+  //--
+  if(modeRec&&recordToBuffer){
+      strokeWeight(2);
+      stroke(255,0,0);
+      float q = 10 + (float(sW-20) * (float(bufferCounter)/float(bufferCounterMax)));
+      line(10,10,q,10);
+    }
+  //--
 }
 
 //---
 void doSaveWrapup() {
+  bufferCounter=bufferCounterMin;
+  if(recordToBuffer){
+    for(int i=0;i<frameBuffer.size();i++){
+      saveFrameHandler(i);
+    }
+  }
   if (fout.isRecording()) {
     fout.endRecord();
     fout.save();
