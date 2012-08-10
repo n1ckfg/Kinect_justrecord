@@ -3,9 +3,6 @@ import ddf.minim.*;
 import processing.opengl.*;
 import proxml.*;
 
-//**************************************
-//int maxDepthValue = 1040;  // full range 0-2047, rec'd 530-1040
-//int minDepthValue = 530;  
 int sW = 640;
 int sH = 480;
 int fps = 24;
@@ -18,18 +15,27 @@ String fileName = "shot";
 String filePath = "data";
 String folderIndicator = "_folder";
 //**************************************
-
+boolean mirror = true;
+boolean recordToBuffer = false;
+float bufferTimeInSec = 30;
+boolean rawDepth = false;
+boolean remapRawDepth = false;
+int rawDepthMaxValue = 1040;  // full range 2047, default 1040
+int rawDepthMinValue = 530;  //  full range 0, default 530
+//**************************************
 //sound
 Minim minim;
 AudioInput in;
 AudioRecorder fout;
 
-//--Kinect sectup
+//--Kinect secup
 SimpleOpenNI context;
-boolean mirror = true;
 boolean depthSwitch = true;
 boolean rgbSwitch = false;
 boolean firstRun = true;
+int[] depthArray = new int[sW*sH];
+PImage arrayToImg = createImage(sW,sH,RGB);
+
 //--
 
 int fontSize = 12;
@@ -48,12 +54,11 @@ String sayText;
 // The buffer will increase your speed on slower machines, but record time depends on available RAM.
 // Use bufferTimeInSec to reduce the buffer size if you're getting "out of memory" errors.
 // 30 sec. of recording time per 1GB RAM allocated to Processing is a good rule of thumb.
-boolean recordToBuffer = true;
-float bufferTimeInSec = 50;
 int bufferCounterMin = counter;
 int bufferCounter = bufferCounterMin;
 int bufferCounterMax = int(bufferTimeInSec * fps);
 PImage[] frameBuffer;
+boolean savingFromBuffer=false;
 //--
 
 XMLInOut xmlIO;
@@ -77,7 +82,16 @@ void setup() {
 void draw() {
   background(bgColor);
   context.update();
+  //~~~~~~~~~~~~~~~~~~~~
+  if(rawDepth){
+  depthArray = context.depthMap();
+  imageProcess(rawDepthMinValue, rawDepthMaxValue, remapRawDepth);
+  arrayToImg.pixels = depthArray;
+  drawGrid(arrayToImg);
+  }else{
   drawGrid(context.depthImage());
+  }
+  //~~~~~~~~~~~~~~~~~~~~
   if (modeRec) {
     drawRecord();
   }
@@ -181,15 +195,22 @@ void recDot() {
       line(10,10,q,10);
     }
   //--
+  if(savingFromBuffer){
+  noStroke();
+  fill(255,0,0,100);
+  rect(0,0,sW,sH);
+  }
 }
 
 //---
 void doSaveWrapup() {
   if(recordToBuffer){
+    savingFromBuffer=true;
     for(int i=0;i<bufferCounter;i++){
       saveFrameHandler(i);
     }
     bufferCounter=bufferCounterMin;
+    savingFromBuffer=false;
   }
   if (fout.isRecording()) {
     fout.endRecord();
@@ -265,5 +286,13 @@ void xmlInit() {
   xmlFile.addAttribute("shot", shot);
 }
 
+void imageProcess(int _min, int _max, boolean _b) {
+  if(_b){
+  for(int i=0;i<depthArray.length;i++) {
+    int q = int(map(depthArray[i],_min,_max,255,0));
+    depthArray[i] = color(q);
+  }
+  }
+}
 //---   END   ---
 
