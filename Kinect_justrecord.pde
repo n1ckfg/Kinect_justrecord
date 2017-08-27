@@ -1,7 +1,5 @@
 import SimpleOpenNI.*;
 import ddf.minim.*;
-import processing.opengl.*;
-import proxml.*;
 
 int sW = 640;
 int sH = 480;
@@ -62,14 +60,15 @@ boolean savingFromBuffer=false;
 //--
 
 XMLInOut xmlIO;
-proxml.XMLElement xmlFile;
+XMLElement xmlFile;
 String xmlFileName;
 boolean loaded = false;
 
 //-----------------------------------------
 
 void setup() {
-  size(sW, sH, P2D);
+  size(50, 50, P2D);
+  surface.setSize(sW, sH);
   frameRate(fps);
   initBuffer();
   setupRecord();
@@ -105,7 +104,7 @@ void draw() {
   recDot();
 }
 
-void xmlEvent(proxml.XMLElement element) {
+void xmlEvent(XMLElement element) {
   //this function is ccalled by default when an XML object is loaded
   xmlFile = element;
   //parseXML(); //appelle la fonction qui analyse le fichier XML
@@ -273,7 +272,7 @@ void xmlSaveToDisk() {
 }  
 
 void xmlAdd() {
-  proxml.XMLElement frame = new proxml.XMLElement("frame");
+  XMLElement frame = new XMLElement("frame");
   xmlFile.addChild(frame);
   frame.addAttribute("index", counter);
   frame.addAttribute("timestamp", timestamp);
@@ -282,7 +281,7 @@ void xmlAdd() {
 void xmlInit() {
   xmlIO = new XMLInOut(this);
   xmlFileName = fileName + shot + ".xml";
-  xmlFile = new proxml.XMLElement("timestamps");
+  xmlFile = new XMLElement("timestamps");
   xmlFile.addAttribute("shot", shot);
 }
 
@@ -295,4 +294,3 @@ void imageProcess(int _min, int _max, boolean _b) {
   }
 }
 //---   END   ---
-
