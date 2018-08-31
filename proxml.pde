@@ -732,8 +732,8 @@ public class XMLInOut{
 		try{
 			File file;
 			//if (!pApplet.online){
-				file = new File(sketchPath("") + File.separator + "data", filename);
-				System.out.println(sketchPath("") + File.separator + "data");
+				file = new File(sketchPath(""), filename);
+				System.out.println(sketchPath(""));
 				if (!file.exists()){
 					final String parent = file.getParent();
 
@@ -754,7 +754,7 @@ public class XMLInOut{
 			output.close();
 		}catch (Exception e){
 			e.printStackTrace();
-			System.out.println(sketchPath("") + File.separator + "data");
+			System.out.println(sketchPath(""));
 			System.out.println("You cannot write to this destination. Make sure destionation is a valid path");
 		}
 	}

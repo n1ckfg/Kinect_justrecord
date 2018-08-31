@@ -28,6 +28,5 @@ void stopAll(){
 void startAll(){
       modeRec=true;
       startRecSound.play(0);
-   }
-
-
+      initAudioFout();
+}

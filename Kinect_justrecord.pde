@@ -10,7 +10,7 @@ color bgColor = color(0);
 String fileType = "tga";  //tif, tga, jpg, png; use tga for best speed
 String audioFileType = "wav";
 String fileName = "shot";
-String filePath = "data";
+String filePath = "capture";
 String folderIndicator = "_folder";
 //**************************************
 boolean mirror = true;
@@ -98,7 +98,7 @@ void draw() {
     if (fout.isRecording()) {
       fout.endRecord();
       fout.save();
-      initAudioFout();
+      //initAudioFout();
     }
   }
   recDot();
@@ -214,7 +214,7 @@ void doSaveWrapup() {
   if (fout.isRecording()) {
     fout.endRecord();
     fout.save();
-    initAudioFout();
+    //initAudioFout();
   }
   println("saved " + fileName+shot+"."+audioFileType);
   xmlSaveToDisk();
@@ -240,7 +240,7 @@ void initBuffer(){
 //---
 
 void initKinect() {
-  context = new SimpleOpenNI(this,SimpleOpenNI.RUN_MODE_MULTI_THREADED);
+  context = new SimpleOpenNI(this);//,SimpleOpenNI.RUN_MODE_MULTI_THREADED);
   context.setMirror(mirror);
   if (depthSwitch) {
     context.enableDepth();
@@ -268,7 +268,7 @@ void stop() {
 
 /* saves the XML list to disk */
 void xmlSaveToDisk() {
-  xmlIO.saveElement(xmlFile, xmlFileName);
+  xmlIO.saveElement(xmlFile, filePath + "/" + xmlFileName);
 }  
 
 void xmlAdd() {
